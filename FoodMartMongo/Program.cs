@@ -1,4 +1,23 @@
+using System.Reflection;
+using FoodMartMongo.Services.CategoryServices;
+using FoodMartMongo.Services.CustomerServices;
+using FoodMartMongo.Services.ProductServices;
+using FoodMartMongo.Settings;
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey"));
+builder.Services.AddScoped<DatabaseSettings>(sp =>
+{
+    return sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
